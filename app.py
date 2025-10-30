@@ -53,8 +53,15 @@ def main():
         # 사용자 메시지 추가
         st.session_state.messages.append({"role": "user", "content": user_input})
 
-        # 모델에 전달할 프롬프트 구성 (간단하게 전체 대화 텍스트로 연결)
-        prompt = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state.messages])
+        # 모델에 전달할 프롬프트 구성
+        # 어르신을 위한 상냥하고 친절한 말투를 유지하도록 시스템 지침을 프롬프트 앞에 추가합니다.
+        system_instruction = (
+            "당신은 어르신(노년층)을 대상으로 상냥하고 친절한 말투로 응답하는 상담 도우미입니다. "
+            "존댓말을 사용하고, 천천히, 친절하게 설명하세요. 어려운 용어는 쉬운 말로 풀어 설명하고, "
+            "한 번에 한 가지 정보를 제공하며 배려심 있고 공손한 표현을 사용하세요."
+        )
+        conversation_text = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state.messages])
+        prompt = system_instruction + "\n\n" + conversation_text
 
         with st.spinner("응답 생성 중..."):
             try:
@@ -64,7 +71,7 @@ def main():
 
         # 어시스턴트 메시지 추가 및 화면 갱신
         st.session_state.messages.append({"role": "assistant", "content": reply_text})
-        st.experimental_rerun()
+        st.rerun()
 
 if __name__ == '__main__':
     main()
