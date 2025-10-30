@@ -28,12 +28,16 @@ def main():
     _init_session()
 
     st.title("어르신 복지 상담 챗봇")
+    st.subheader("노인 복지에 관한 궁금한 점을 물어보세요!")
 
     client = _get_client()
     if client is None:
         st.error("GEMINI_API_KEY가 설정되어 있지 않습니다. Streamlit secrets에 GEMINI_API_KEY를 추가하세요.")
         st.info("설정 예: .streamlit/secrets.toml 에 `GEMINI_API_KEY = \"your_api_key\"` 추가")
         return
+
+    # 모델 선택 UI를 제거했으므로 기본 모델을 지정합니다. 필요 시 변경하세요.
+    model = "gemini-2.5-flash"
 
     # 사이드바: 모델 선택 대신 '질문 요청' 입력창 제공
     question_request = st.sidebar.text_area("질문 요청", help="어르신이 하실 질문을 입력하세요.")
