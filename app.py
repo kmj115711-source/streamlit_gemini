@@ -36,37 +36,8 @@ def main():
         st.info("설정 예: .streamlit/secrets.toml 에 `GEMINI_API_KEY = \"your_api_key\"` 추가")
         return
 
-    # 모델 선택 UI를 제거했으므로 기본 모델을 지정합니다. 필요 시 변경하세요.
-    model = "gemini-2.5-flash"
-
-    # 사이드바: 모델 선택 대신 '질문 요청' 입력창 제공
-    question_request = st.sidebar.text_area("질문 요청", help="어르신이 하실 질문을 입력하세요.")
-    if st.sidebar.button("질문 전송"):
-        qr = question_request.strip()
-        if qr:
-            # 사용자 메시지로 추가
-            st.session_state.messages.append({"role": "user", "content": qr})
-
-            # 모델에 전달할 프롬프트 구성 (어르신 대상 상냥한 말투 포함)
-            system_instruction = (
-                "당신은 어르신(노년층)을 대상으로 상냥하고 친절한 말투로 응답하는 상담 도우미입니다. "
-                "존댓말을 사용하고, 천천히, 친절하게 설명하세요. 어려운 용어는 쉬운 말로 풀어 설명하고, "
-                "한 번에 한 가지 정보를 제공하며 배려심 있고 공손한 표현을 사용하세요."
-            )
-            conversation_text = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state.messages])
-            prompt = system_instruction + "\n\n" + conversation_text
-
-            with st.spinner("응답 생성 중..."):
-                try:
-                    # 고정 모델명을 사용하여 요청(필요시 변경 가능)
-                    reply_text = _generate_reply(client, "gemini-2.5-flash", prompt)
-                except Exception as e:
-                    reply_text = "죄송합니다. 응답을 생성할 수 없습니다."
-                    st.exception(e)
-
-            st.session_state.messages.append({"role": "assistant", "content": reply_text})
-            st.experimental_rerun()
-
+    # 사이드바: 모델 선택과 초기화
+    model = st.sidebar.selectbox("모델 선택", ["gemini-2.5-flash", "gemini-1.0"], index=0)
     if st.sidebar.button("대화 초기화"):
         st.session_state.messages = [{"role": "assistant", "content": "안녕하세요! 무엇을 도와드릴까요?"}]
 
